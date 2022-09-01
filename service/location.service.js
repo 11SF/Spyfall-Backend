@@ -18,14 +18,25 @@ async function find(query) {
 }
 
 
-async function create(reqData) {
+async function create(locationObject) {
     let result
     try {
-        result = await repository.create(reqData)
+        result = await repository.create(locationObject)
     } catch (err) {
         return new InternalError(5020, err)
     }
     return result
 }
 
-module.exports = { find, create }
+async function update(locationObject) {
+    let result
+    try {
+        result = await repository.update(locationObject)
+    } catch (err) {
+        return new InternalError(5020, err)
+    }
+    return result
+}
+
+
+module.exports = { find, create, update }

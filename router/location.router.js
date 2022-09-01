@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const { mapRequestBodyLocationToModel } = require("../adapter/location.adapter");
+const { mapRequestBodyLocationToModelObject } = require("../adapter/location.adapter");
 const service = require("../service/location.service");
-const { InternalError } = require("../utility/error");
+const { InternalError, InvalidDataError } = require("../utility/error");
 const { buildResponse } = require("../utility/response")
 require("dotenv").config();
 
@@ -20,10 +20,31 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     let result
     try {
-        let newLocation = mapRequestBodyLocationToModel(req.body)
-        result = await service.create(newLocation)
+        let newLocationObject = mapRequestBodyLocationToModelObject(req.body)
+        result = await service.create(newLocationObject)
     } catch (err) {
-        result = new InternalError(5010, err)
+        if (err instanceof InvalidDataError) {
+            result = err
+        } else {
+            result = new InternalError(5010, err)
+        }
+    }
+    return res.json(
+        buildResponse(result)
+    )
+})
+
+router.put("/", async (req, res) => {
+    let result
+    try {
+        let location = mapRequestBodyLocationToModelObject(req.body)
+        result = await service.update(location)
+    } catch (err) {
+        if (err instanceof InvalidDataError) {
+            result = err
+        } else {
+            result = new InternalError(5010, err)
+        }
     }
     return res.json(
         buildResponse(result)

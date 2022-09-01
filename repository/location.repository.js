@@ -11,10 +11,10 @@ async function find(filter) {
     return result
 }
 
-async function create(locationModel) {
+async function create(locationObject) {
     let result
     try {
-        const newRecord = new locationRepo(locationModel)
+        const newRecord = new locationRepo(locationObject.model)
         result = await newRecord.save()
     } catch (err) {
         return new InternalError(5030, err)
@@ -22,4 +22,15 @@ async function create(locationModel) {
     return result
 }
 
-module.exports = { find, create }
+async function update(locationObject) {
+    let result
+    try {
+        result = await locationRepo.findByIdAndUpdate(locationObject.id, { roles: locationObject.model.roles })
+    } catch (err) {
+        return new InternalError(5030, err)
+    }
+    return result
+}
+
+
+module.exports = { find, create, update }

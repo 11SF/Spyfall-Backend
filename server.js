@@ -9,6 +9,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 require("./routers")(app)
-app.listen(PORT, ()=> {
+const server = app.listen(PORT, () => {
     console.log("[success] task 1 : Server running on port " + PORT)
 })
+
+const io = require('socket.io')(server);
+require('./socket/room.socket')(io);

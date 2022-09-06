@@ -3,8 +3,8 @@ function buildResponse(data) {
         return {
             meta: {
                 code: data.status,
-                message: data.name,
-                error: data.message,
+                error: data.name,
+                message: data.message,
             },
             data: null
         }
@@ -12,8 +12,8 @@ function buildResponse(data) {
     return {
         meta: {
             code: 1000,
+            error: null,
             message: "successful",
-            error: null
         },
         data: data
     }

@@ -18,4 +18,14 @@ class InvalidDataError extends Error {
     }
 }
 
-module.exports = { InternalError, InvalidDataError }
+class DataNotFound extends Error {
+    constructor(codeLevel, message) {
+        super(codeLevel, message);
+
+        this.name = 'Data not found';
+        this.status = codeLevel;
+        this.message = message.toString()
+    }
+}
+
+module.exports = { InternalError, InvalidDataError, DataNotFound }

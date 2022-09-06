@@ -1,29 +1,35 @@
-const mongoose = require('mongoose'),
-      Schema = mongoose.Schema;
+const mongoose = require("mongoose"),
+  Schema = mongoose.Schema;
 
 const locationSchema = new Schema({
-    name : {
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  roles: [
+    {
+      name: {
         type: String,
-        required : true,
-        unique: true
+        unique: true,
+      },
+      description: {
+        type: String,
+      },
     },
-    roles : [
-        {
-            name: {
-                type : String,
-                required: true,
-                unique: true
-            },
-            description: {
-                type : String,
-                required: false
-            }
-        }
-    ],
-    createBy : {
-        type : String,
-        required: false
-    },
-})
+  ],
+  createBy: {
+    type: String,
+    required: false,
+  },
+  createDate: {
+    type: Date,
+    required: false,
+  },
+  updateDate: {
+    type: Date,
+    required: false,
+  },
+});
 
-module.exports = mongoose.model('location',locationSchema)
+module.exports = mongoose.model("location", locationSchema);

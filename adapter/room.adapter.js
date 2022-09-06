@@ -1,8 +1,8 @@
 function mapRequestBodyRoomToModelObject(reqData) {
 
-    const { _id, code, name, ownerId, roundTime } = reqData
+    const { id, code, name, ownerId, roundTime } = reqData
     return {
-        "id": (_id ? _id : null),
+        "id": (id ? id : null),
         model: {
             name: (name ? name: null),
             code: (code ? code : null),

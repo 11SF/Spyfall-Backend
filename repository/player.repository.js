@@ -1,5 +1,5 @@
 const playerModel = require("../model/player.model");
-const { InternalError } = require("../utility/error");
+const { InternalError, DataNotFound } = require("../utility/error");
 
 async function create(playerObject) {
   let result;
@@ -12,4 +12,39 @@ async function create(playerObject) {
   return result;
 }
 
-module.exports = { create };
+async function find(playerObject) {
+  let result;
+  try {
+    result = await playerModel.find({ _id: playerObject.id });
+    console.log(result);
+    if (result.length === 0) {
+      return new DataNotFound(
+        "Player id: '" + playerObject.id + "' id not found"
+      );
+    }
+  } catch (err) {
+    return new InternalError(5030, err);
+  }
+  return result;
+}
+
+async function update(playerObject) {
+  let result;
+  try {
+    result = await playerModel.findByIdAndUpdate(
+      {
+        _id: playerObject.id,
+      },
+      {
+        $set: {
+          name: playerObject.model.name,
+        },
+      }
+    );
+  } catch (err) {
+    return new InternalError(5030, err);
+  }
+  return result;
+}
+
+module.exports = { create, find, update };

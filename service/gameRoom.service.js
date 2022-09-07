@@ -1,4 +1,5 @@
 const gameRoomReposotory = require("../repository/gameRoom.repository");
+const locationRepository = require("../repository/location.repository");
 const {
   InternalError,
   DataNotFound,
@@ -26,7 +27,7 @@ async function find(query) {
 //   try {
 //     result = await gameRoomReposotory.findUserInRoom(playerId);
 //     if (result.length !== 1) {
-//       return new DataNotFound(4020, result.length);
+//       return new DataNotFound(1020, result.length);
 //     }
 //   } catch (err) {
 //     return new InternalError(5020, err);
@@ -55,7 +56,7 @@ async function update(roomObject) {
   return result;
 }
 
-async function upsertPlayer(roomId, playerId) {
+async function getSertPlayer(roomId, playerId) {
   let result;
   try {
     result = await gameRoomReposotory.findUserInRoom(playerId);
@@ -85,6 +86,17 @@ async function remove(roomObject) {
   return result;
 }
 
+async function randomRoleToPlayer(locationObject) {
+  let result;
+  try {
+    location = await locationRepository.find(locationObject.id);
+    result = await repository.remove(locationObject);
+  } catch (err) {
+    return new InternalError(5020, err);
+  }
+  return result;
+}
+
 function randomToken(length) {
   let result = "";
   const characters =
@@ -96,4 +108,11 @@ function randomToken(length) {
   return result;
 }
 
-module.exports = { find, create, update, upsertPlayer, remove };
+module.exports = {
+  find,
+  create,
+  update,
+  getSertPlayer,
+  remove,
+  randomRoleToPlayer,
+};

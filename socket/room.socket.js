@@ -23,7 +23,7 @@ module.exports = function (io) {
       let result;
       let room;
       try {
-        let { playerId, newJoinFlag, roomToken } = data;
+        let { playerId, roomToken } = data;
         console.log(playerId);
 
         room = await GameRoomService.find({
@@ -33,13 +33,12 @@ module.exports = function (io) {
         if (room.length != 1 || room instanceof Error) {
           throw new InternalError(5080, result);
         }
-        result = await GameRoomService.upsertPlayer(room[0]._id, playerId);
+        result = await GameRoomService.getSertPlayer(room[0]._id, playerId);
         console.log(result);
 
         socket.join(result._id);
-        socket.emit("roomMsg", playerId + " เข้ามาแล้ววววว");
-
-        socket.to(result._id).emit("roomMsg", playerId + " เข้ามาแล้ววววว");
+        socket.emit("roomMsg", buildResponse(result));
+        socket.to(result._id).emit("roomMsg", buildResponse(result));
       } catch (err) {
         socket.emit("roomMsg", buildResponse(new InternalError(5080, err)));
       }
@@ -47,24 +46,44 @@ module.exports = function (io) {
     socket.on("roomList", (data) => {
       console.log(socket.rooms);
     });
-    socket.on("startGame", (data) => {
-      let timer = 8 * 60,
-        duration = 8 * 60,
-        minutes,
-        seconds;
-      setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    socket.on("startGame", async (data) => {
+      try {
+        //Step 1 : Random Role to player
+        let roles = await randomRoleToPlayer()
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        socket.to(data.roomId).emit("countdown", minutes + ":" + seconds);
-        socket.emit("countdown", minutes + ":" + seconds);
 
-        if (--timer < 0) {
-          timer = duration;
-        }
-      }, 1000);
+        let timer = data.minutes * 60,
+          duration = data.minutes * 60,
+          minutes,
+          seconds;
+
+        //random location & roles
+        setInterval(function () {
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10);
+
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+          socket.to(data.roomId).emit(
+            "countdown",
+            buildResponse({
+              time: minutes + ":" + seconds,
+            })
+          );
+          socket.emit(
+            "countdown",
+            buildResponse({
+              time: minutes + ":" + seconds,
+            })
+          );
+
+          if (--timer < 0) {
+            timer = duration;
+          }
+        }, 1000);
+      } catch (err) {
+        socket.emit("countdown", buildResponse(err));
+      }
     });
     socket.on("closeRoom", async (data) => {
       let result;

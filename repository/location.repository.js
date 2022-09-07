@@ -8,6 +8,9 @@ async function find(req) {
     if (req.name) {
       query.name = req.name;
     }
+    if(req.id) {
+      query._id = req.id;
+    }
     query.updateDate = {
       $ne: null,
     };

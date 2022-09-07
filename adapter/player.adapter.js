@@ -1,7 +1,7 @@
 function mapRequestBodyPlayerToModelObject(reqData) {
-  const { _id, name, socketId } = reqData;
+  const { id, name, socketId } = reqData;
   return {
-    id: _id ? _id : null,
+    id: id ? id : null,
     model: {
       name: name ? name : null,
       socketId: socketId ? socketId : null,

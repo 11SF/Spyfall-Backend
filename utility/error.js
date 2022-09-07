@@ -19,11 +19,11 @@ class InvalidDataError extends Error {
 }
 
 class DataNotFound extends Error {
-    constructor(codeLevel, message) {
-        super(codeLevel, message);
+    constructor(message) {
+        super(message);
 
         this.name = 'Data not found';
-        this.status = codeLevel;
+        this.status = 1999;
         this.message = message.toString()
     }
 }

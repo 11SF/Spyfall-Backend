@@ -1,19 +1,23 @@
 const locationRepo = require("../Model/location.model");
 const { InternalError } = require("../utility/error");
 
-async function find(req) {
+async function find(findLocationObject) {
   let result;
   try {
     let query = {};
-    if (req.name) {
-      query.name = req.name;
+    if (findLocationObject.model.name) {
+      query.name = findLocationObject.model.name;
     }
-    if(req.id) {
-      query._id = req.id;
+    if (findLocationObject.model.createByPlayerId) {
+      query.createByPlayerId = findLocationObject.model.createByPlayerId;
+      query.updateDate = null
     }
-    query.updateDate = {
-      $ne: null,
-    };
+    if (!findLocationObject.model.createByPlayerId) {
+      query.updateDate = {
+        $ne: null,
+      };
+    }
+
     result = await locationRepo.find(query);
   } catch (err) {
     return new InternalError(5030, err);

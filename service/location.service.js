@@ -1,10 +1,15 @@
 const repository = require("../repository/location.repository");
 const { InternalError } = require("../utility/error");
 
-async function find(query) {
+async function find(findLocationObject) {
   let result;
   try {
-    result = await repository.find(query);
+    result = await repository.find(findLocationObject);
+    if (result.length === 0) {
+      return new DataNotFound(
+        "Player id: '" + findLocationObject.id + "' id not found"
+      );
+    }
   } catch (err) {
     return new InternalError(5020, err);
   }

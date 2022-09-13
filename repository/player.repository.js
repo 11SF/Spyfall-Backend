@@ -16,7 +16,6 @@ async function find(playerObject) {
   let result;
   try {
     result = await playerModel.find({ _id: playerObject.id });
-    console.log(result);
     if (result.length === 0) {
       return new DataNotFound(
         "Player id: '" + playerObject.id + "' id not found"

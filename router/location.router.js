@@ -10,7 +10,8 @@ require("dotenv").config();
 router.get("/", async (req, res) => {
   let result;
   try {
-    result = await service.find(req.query);
+    let findLocationObject = mapRequestBodyLocationToModelObject(req.query);
+    result = await service.find(findLocationObject);
   } catch (err) {
     result = new InternalError(5010, err);
   }

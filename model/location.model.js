@@ -22,6 +22,10 @@ const locationSchema = new Schema({
     type: String,
     required: false,
   },
+  createByPlayerId: {
+    type: String,
+    required: false,
+  },
   createDate: {
     type: Date,
     required: false,

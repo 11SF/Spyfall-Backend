@@ -15,5 +15,10 @@ const server = app.listen(PORT, () => {
     console.log("[success] task 1 : Server running on port " + PORT)
 })
 
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "http://127.0.0.1:5173",
+    methods: ["GET", "POST"]
+    }
+});
 require('./socket/room.socket')(io);

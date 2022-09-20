@@ -11,6 +11,11 @@ const gameRoomSchema = new Schema({
     required: true,
     unique: true,
   },
+  mode: {
+    type: String,
+    require: true,
+    default: "0"
+  },
   ownerId: {
     type: String,
     required: true,
@@ -32,6 +37,22 @@ const gameRoomSchema = new Schema({
     type: String,
     required: true,
   },
+  location: [
+    {
+      id: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: Boolean,
+        required: true,
+      }
+    }
+  ]
 });
 
 module.exports = mongoose.model("gameRoom", gameRoomSchema);

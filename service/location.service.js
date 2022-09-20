@@ -1,5 +1,5 @@
 const repository = require("../repository/location.repository");
-const { InternalError } = require("../utility/error");
+const { InternalError, DataNotFound } = require("../utility/error");
 
 async function find(findLocationObject) {
   let result;

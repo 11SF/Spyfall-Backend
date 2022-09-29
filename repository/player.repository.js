@@ -29,15 +29,20 @@ async function find(playerObject) {
 
 async function update(playerObject) {
   let result;
+  let updateObject = {};
+  if (playerObject.model.name) {
+    updateObject["name"] = playerObject.model.name;
+  }
+  if (playerObject.model.socketId) {
+    updateObject["socketId"] = playerObject.model.socketId;
+  }
   try {
     result = await playerModel.findByIdAndUpdate(
       {
         _id: playerObject.id,
       },
       {
-        $set: {
-          name: playerObject.model.name,
-        },
+        $set: updateObject,
       }
     );
   } catch (err) {

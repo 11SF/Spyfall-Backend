@@ -3,8 +3,40 @@ const { InternalError } = require("../utility/error");
 
 async function find(filter) {
   let result;
+  console.log(filter);
   try {
-    result = await gameRoomRepo.find(filter);
+    result = await gameRoomRepo.aggregate([
+      {
+        $match: filter,
+      },
+      { $unwind: "$players" },
+      {
+        $addFields: {
+          playerIdObj: { $toObjectId: "$players.id" },
+        },
+      },
+      {
+        $lookup: {
+          from: "players",
+          localField: "playerIdObj",
+          foreignField: "_id",
+          as: "playerInfo",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          code: { $first: "$code" },
+          mode: { $first: "$mode" },
+          ownerId: { $first: "$ownerId" },
+          roundTime: { $first: "$roundTime" },
+          location: { $first: "$location" },
+          numOfSpy: { $first: "$numOfSpy" },
+          players: { $push: { $first: "$playerInfo" } },
+        },
+      },
+    ]);
   } catch (err) {
     return new InternalError(5030, err);
   }
@@ -38,7 +70,31 @@ async function create(roomObject) {
   return result;
 }
 
-async function update(roomObject) {
+async function updateSetting(roomObject) {
+  let result;
+  let newSetting = {
+    mode: roomObject.model.mode,
+    ownerId: roomObject.model.ownerId,
+    roundTime: roomObject.model.roundTime,
+    location: roomObject.model.location,
+    numOfSpy: roomObject.model.numOfSpy,
+  };
+  try {
+    result = await gameRoomRepo.findByIdAndUpdate(
+      {
+        _id: roomObject.id,
+      },
+      {
+        $set: newSetting,
+      }
+    );
+  } catch (err) {
+    return new InternalError(5030, err);
+  }
+  return result;
+}
+
+async function updatePlayers(roomObject) {
   let result;
   try {
     result = await gameRoomRepo.findByIdAndUpdate(
@@ -56,7 +112,6 @@ async function update(roomObject) {
   }
   return result;
 }
-
 async function addPlayer(roomId, playerId) {
   let result;
   try {
@@ -90,4 +145,12 @@ async function remove(roomObject) {
   return result;
 }
 
-module.exports = { find, findUserInRoom, create, update, addPlayer, remove };
+module.exports = {
+  find,
+  findUserInRoom,
+  create,
+  updatePlayers,
+  updateSetting,
+  addPlayer,
+  remove,
+};

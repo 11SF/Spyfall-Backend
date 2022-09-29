@@ -8,13 +8,50 @@ const {
 
 async function find(query) {
   let result;
-  let filter = null;
+  let filter = {};
   try {
-    if (query.code) {
-      filter = {
-        code: query.code,
-      };
+    if (query?.code) {
+      filter["code"] = query.code;
+    } else if (query?.ownerId) {
+      filter["ownerId"] = query.ownerId;
     }
+    result = await gameRoomReposotory.find(filter);
+    if (result.length === 0) {
+      return null
+    }
+  } catch (err) {
+    return new InternalError(5020, err);
+  }
+  return result;
+}
+
+async function findUserInRoom(query) {
+  let result;
+  try {
+    let { playerId } = query;
+    result = await gameRoomReposotory.findUserInRoom(playerId);
+    if (!result) {
+      return new DataNotFound(1020, result);
+    }
+    let filter = {
+      code: result?.code,
+    };
+    result = await gameRoomReposotory.find(filter);
+    console.log(result);
+  } catch (err) {
+    return new InternalError(5020, err);
+  }
+  return result;
+}
+
+async function create(roomObject) {
+  let result;
+  roomObject.model.code = randomToken(5);
+  try {
+    result = await gameRoomReposotory.create(roomObject);
+    let filter = {
+      code: roomObject.model.code,
+    };
     result = await gameRoomReposotory.find(filter);
   } catch (err) {
     return new InternalError(5020, err);
@@ -22,24 +59,10 @@ async function find(query) {
   return result;
 }
 
-// async function findUserInRoom(playerId) {
-//   let result;
-//   try {
-//     result = await gameRoomReposotory.findUserInRoom(playerId);
-//     if (result.length !== 1) {
-//       return new DataNotFound(1020, result.length);
-//     }
-//   } catch (err) {
-//     return new InternalError(5020, err);
-//   }
-//   return result;
-// }
-
-async function create(roomObject) {
+async function updateSetting(roomObject) {
   let result;
-  roomObject.model.code = randomToken(6);
   try {
-    result = await gameRoomReposotory.create(roomObject);
+    result = await gameRoomReposotory.updateSetting(roomObject);
   } catch (err) {
     return new InternalError(5020, err);
   }
@@ -49,7 +72,7 @@ async function create(roomObject) {
 async function update(roomObject) {
   let result;
   try {
-    result = await gameRoomReposotory.update(roomObject);
+    result = await gameRoomReposotory.updatePlayers(roomObject);
   } catch (err) {
     return new InternalError(5020, err);
   }
@@ -61,15 +84,21 @@ async function getSertPlayer(roomId, playerId) {
   try {
     result = await gameRoomReposotory.findUserInRoom(playerId);
     if (result) {
-      console.log("found");
+      let filter = {
+        code: result?.code,
+      };
+      result = await gameRoomReposotory.find(filter);
       return result;
     }
-    console.log("not found");
 
     if (!roomId || !playerId) {
       return new InvalidDataError(5020, "");
     }
     result = await gameRoomReposotory.addPlayer(roomId, playerId);
+    let filter = {
+      code: result?.code,
+    };
+    result = await gameRoomReposotory.find(filter);
   } catch (err) {
     return new InternalError(5020, err);
   }
@@ -98,7 +127,7 @@ async function randomRoleToPlayer(locationObject) {
 }
 
 function randomToken(length) {
-  let result = "";
+  let result = "#";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let charactersLength = characters.length;
@@ -115,4 +144,6 @@ module.exports = {
   getSertPlayer,
   remove,
   randomRoleToPlayer,
+  findUserInRoom,
+  updateSetting,
 };

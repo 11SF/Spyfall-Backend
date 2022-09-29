@@ -14,7 +14,7 @@ const gameRoomSchema = new Schema({
   mode: {
     type: String,
     require: true,
-    default: "0"
+    default: "0",
   },
   ownerId: {
     type: String,
@@ -26,7 +26,6 @@ const gameRoomSchema = new Schema({
       id: {
         type: String,
         required: true,
-        unique: true,
       },
       role: {
         type: String,
@@ -50,9 +49,13 @@ const gameRoomSchema = new Schema({
       state: {
         type: Boolean,
         required: true,
-      }
-    }
-  ]
+      },
+    },
+  ],
+  numOfSpy: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("gameRoom", gameRoomSchema);

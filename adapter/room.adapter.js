@@ -1,5 +1,15 @@
 function mapRequestBodyRoomToModelObject(reqData) {
-  const { id, code, name, ownerId, roundTime } = reqData;
+  const {
+    id,
+    code,
+    mode,
+    name,
+    ownerId,
+    players,
+    roundTime,
+    location,
+    numOfSpy,
+  } = reqData;
   return {
     id: id ? id : null,
     model: {
@@ -7,13 +17,10 @@ function mapRequestBodyRoomToModelObject(reqData) {
       code: code ? code : null,
       mode: mode ? mode : 0,
       ownerId: ownerId ? ownerId : null,
-      players: [
-        {
-          id: ownerId ? ownerId : null,
-        },
-      ],
+      players: players ? mapPlayer(players) : null,
       roundTime: roundTime ? roundTime : null,
-      location: mapLocation(location),
+      location: location ? mapLocation(location) : null,
+      numOfSpy: numOfSpy ?? null,
     },
   };
 }
@@ -25,6 +32,17 @@ function mapLocation(locations) {
       id: location.id,
       name: location.name,
       state: location.state,
+    });
+  }
+  return result;
+}
+
+function mapPlayer(players) {
+  let result = [];
+  for (const player of players) {
+    result.push({
+      id: player.id ? player.id : null,
+      role: player.role ? player.role : null,
     });
   }
   return result;
